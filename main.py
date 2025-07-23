@@ -59,8 +59,12 @@ async def main():
     async with bot:
         await load_cogs()
 
-        # 🔐 Mets ton token Discord ici entre les guillemets
+        # 🔐 Colle ici ton token entre les guillemets
         token = "MTM5NjA5Mzk3NzAyNzE0OTgyNA.GVcYWS.Iw2tNxdzc4bQTEkgyoS5l-6Ek4uAh3re7dx9h8"
+
+        if not token:
+            print("❌ Erreur : tu dois définir ton token dans le fichier main.py.")
+            return
 
         await bot.start(token)
 
