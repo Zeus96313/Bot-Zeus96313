@@ -59,8 +59,9 @@ async def main():
     async with bot:
         await load_cogs()
 
-        # ✅ Ton token ici (attention à la confidentialité !)
+        # 🔐 Mets ton token Discord ici entre les guillemets
         token = "MTM5NjA5Mzk3NzAyNzE0OTgyNA.GVcYWS.Iw2tNxdzc4bQTEkgyoS5l-6Ek4uAh3re7dx9h8"
+
         await bot.start(token)
 
 asyncio.run(main())
