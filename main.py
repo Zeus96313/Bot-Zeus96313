@@ -58,10 +58,14 @@ async def reload(ctx, cog: str):
 async def main():
     async with bot:
         await load_cogs()
-        token = os.getenv("Tocken_Bot")  # ← Ton token doit être défini dans ton environnement (secrets ou .env)
-        if not token:
-            print("❌ Erreur : le token n'est pas défini dans les secrets.")
+
+        # 👉 Mets ton token ici entre les guillemets
+        token = "MTM5NjA5Mzk3NzAyNzE0OTgyNA.GVcYWS.Iw2tNxdzc4bQTEkgyoS5l-6Ek4uAh3re7dx9h8"
+
+        if not token or token == "MTM5NjA5Mzk3NzAyNzE0OTgyNA.GVcYWS.Iw2tNxdzc4bQTEkgyoS5l-6Ek4uAh3re7dx9h8":
+            print("❌ Erreur : tu dois définir ton token dans le fichier main.py.")
             return
+
         await bot.start(token)
 
 asyncio.run(main())
