@@ -59,13 +59,8 @@ async def main():
     async with bot:
         await load_cogs()
 
-        # 👉 Mets ton token ici entre les guillemets
+        # ✅ Ton token ici (attention à la confidentialité !)
         token = "MTM5NjA5Mzk3NzAyNzE0OTgyNA.GVcYWS.Iw2tNxdzc4bQTEkgyoS5l-6Ek4uAh3re7dx9h8"
-
-        if not token or token == "MTM5NjA5Mzk3NzAyNzE0OTgyNA.GVcYWS.Iw2tNxdzc4bQTEkgyoS5l-6Ek4uAh3re7dx9h8":
-            print("❌ Erreur : tu dois définir ton token dans le fichier main.py.")
-            return
-
         await bot.start(token)
 
 asyncio.run(main())
