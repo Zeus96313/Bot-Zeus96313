@@ -60,7 +60,7 @@ async def main():
         await load_cogs()
 
         # 🔐 Colle ici ton token entre les guillemets
-        token = "5NjA5Mzk3NzAyNzE0OTgyNA.GVcYWS.Iw2tNxdzc4bQTEkgyoS5l-6Ek4uAh3re7dx9h8"
+        token = "MTM5NjA5Mzk3NzAyNzE0OTgyNA.GpwEV9.Pl1yd7gnhV-6zFzd51cH8_q-OH6Z9VJeH4Qvt8"
 
         if not token:
             print("❌ Erreur : tu dois définir ton token dans le fichier main.py.")
