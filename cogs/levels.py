@@ -36,12 +36,12 @@ LEVEL_ROLES = {
 def load_xp():
     if not os.path.isfile(XP_FILE):
         return {}
-    with open(XP_FILE, "r") as f:
+    with open(XP_FILE, "r", encoding='utf-8') as f:
         return json.load(f)
 
 def save_xp(data):
-    with open(XP_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+    with open(XP_FILE, "w", encoding='utf-8') as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
 
 def calculate_level(xp):
     return int((xp / 100) ** 0.7)
@@ -71,6 +71,56 @@ class Levels(commands.Cog):
             pass
         return None
 
+    def get_fonts(self):
+        """Récupère les polices avec support Unicode pour les emojis et accents"""
+        fonts = {}
+        
+        # Liste des polices qui supportent bien Unicode (emojis et accents)
+        font_paths = [
+            # Windows
+            "C:/Windows/Fonts/seguiemj.ttf",  # Segoe UI Emoji
+            "C:/Windows/Fonts/arial.ttf",
+            "C:/Windows/Fonts/calibri.ttf",
+            # Linux
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+            "/System/Library/Fonts/Arial.ttf",  # macOS
+            # Polices alternatives
+            "arial.ttf",
+            "DejaVuSans.ttf"
+        ]
+        
+        working_font = None
+        for font_path in font_paths:
+            try:
+                # Test avec une taille de base pour voir si la police fonctionne
+                test_font = ImageFont.truetype(font_path, 20)
+                working_font = font_path
+                break
+            except (OSError, IOError):
+                continue
+        
+        if working_font:
+            try:
+                fonts['title'] = ImageFont.truetype(working_font, 56)
+                fonts['text'] = ImageFont.truetype(working_font, 38)
+                fonts['small'] = ImageFont.truetype(working_font, 32)
+                fonts['tiny'] = ImageFont.truetype(working_font, 26)
+            except:
+                # Fallback vers les polices par défaut
+                fonts['title'] = ImageFont.load_default()
+                fonts['text'] = ImageFont.load_default()
+                fonts['small'] = ImageFont.load_default()
+                fonts['tiny'] = ImageFont.load_default()
+        else:
+            # Utiliser les polices par défaut si aucune police système n'est trouvée
+            fonts['title'] = ImageFont.load_default()
+            fonts['text'] = ImageFont.load_default()
+            fonts['small'] = ImageFont.load_default()
+            fonts['tiny'] = ImageFont.load_default()
+            
+        return fonts
+
     async def create_rank_image(self, member, level, xp, rank, level_xp, xp_needed_for_next, progress_percent):
         """Crée une image personnalisée pour le rang avec une écriture très nette et grande"""
         # Dimensions encore plus grandes pour une meilleure netteté sur Discord
@@ -87,19 +137,12 @@ class Levels(commands.Cog):
         bar_bg_color = '#2a2a2a'  # Gris foncé pour la barre
 
         try:
-            # Polices BEAUCOUP plus grandes pour une excellente lisibilité sur Discord
-            try:
-                # Polices très grandes pour être parfaitement lisibles
-                title_font = ImageFont.truetype("arial.ttf", 56)   # Énorme pour le titre
-                text_font = ImageFont.truetype("arial.ttf", 38)    # Très grand pour le texte principal
-                small_font = ImageFont.truetype("arial.ttf", 32)   # Grand pour les détails
-                tiny_font = ImageFont.truetype("arial.ttf", 26)    # Moyen pour les petits détails
-            except:
-                # Fallback avec des tailles par défaut plus grandes
-                title_font = ImageFont.load_default().font_variant(size=56)
-                text_font = ImageFont.load_default().font_variant(size=38)
-                small_font = ImageFont.load_default().font_variant(size=32)
-                tiny_font = ImageFont.load_default().font_variant(size=26)
+            # Récupérer les polices avec support Unicode
+            fonts = self.get_fonts()
+            title_font = fonts['title']
+            text_font = fonts['text']
+            small_font = fonts['small']
+            tiny_font = fonts['tiny']
 
             # Avatar plus grand et mieux positionné
             avatar_size = 160
@@ -185,14 +228,17 @@ class Levels(commands.Cog):
                         fill=f"#{green_value:02x}ff{green_value:02x}"
                     )
 
-            # Texte de progression sur la barre - BEAUCOUP plus grand
+            # Texte de progression sur la barre - BEAUCOUP plus grand ET CENTRÉ VERTICALEMENT
             progress_text = f"{level_xp:,} / {xp_needed_for_next:,} XP"
 
-            # Calculer la position centrale du texte
+            # Calculer la position centrale du texte (HORIZONTALEMENT ET VERTICALEMENT)
             bbox = draw.textbbox((0, 0), progress_text, font=small_font)
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
+            
+            # Position horizontale centrée
             text_pos_x = bar_x + (bar_width - text_width) // 2
+            # Position verticale VRAIMENT centrée dans la barre
             text_pos_y = bar_y + (bar_height - text_height) // 2
 
             # Ombre plus prononcée pour le texte sur la barre
